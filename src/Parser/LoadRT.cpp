@@ -4,17 +4,10 @@
 #include <iostream>
 
 ///////////////////////////////////////////////////////////////////////////////]
-#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
-///////////////////////////////////////////////////////////////////////////////]
-struct TokenLine {
-    std::string objectType;              // "circle", "sphere"
-    std::unordered_map<std::string, std::string> kv; // size=<value>
-};
 typedef std::vector<TokenLine>  tokens;
-
 ///////////////////////////////////////////////////////////////////////////////]
 bool Parser::loadRT(const std::string& file, Scene& scene) {
 
@@ -28,7 +21,6 @@ bool Parser::loadRT(const std::string& file, Scene& scene) {
     for (std::vector<TokenLine>::iterator it = t.begin(); it != t.end(); ++it)
         parseOneObject(scene, *it);
 
-
     return true;
 }
 
@@ -36,6 +28,7 @@ bool Parser::loadRT(const std::string& file, Scene& scene) {
 #include "AmbientLight.hpp"
 #include "Camera.hpp"
 #include "Sphere.hpp"
+///////////////////////////////////////////////////////////////////////////////]
 void parseOneObject(Scene& scene, const TokenLine& t)
 {
     if (t.objectType == "camera")
@@ -43,7 +36,7 @@ void parseOneObject(Scene& scene, const TokenLine& t)
     else if (t.objectType == "light")
         scene.add(Light(t));
     else if (t.objectType == "ambient")
-        scene.add(Light(t));
+        scene.add(AmbientLight(t));
     else if (t.objectType == "sphere")
         scene.add(std::make_unique<Sphere>(t));
 

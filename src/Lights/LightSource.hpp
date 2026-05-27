@@ -1,3 +1,6 @@
+#ifndef LIGHTSOURCE_HPP
+#define LIGHTSOURCE_HPP
+
 class Light {
 public:
     Light() = default;
@@ -12,3 +15,5 @@ public:
     Color color;
     double intensity = 1.0;
 };
+
+#endif

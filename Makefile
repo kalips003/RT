@@ -97,7 +97,7 @@ m2: $(NAME)
 
 CC = g++
 # FLAGS = -Wextra -Wall -Werror -g -std=c++98
-FLAGS = -g -std=c++98
+FLAGS = -g
 FLAGS_LESS = -g -std=c++98
 
 
@@ -146,7 +146,7 @@ $(NAME): $(OBJ) main.cpp $(HEAD)
 abc: clean_silent $(OBJ) main.cpp $(HEAD)
 	$(CC) $(FLAGS) $(INC) $(OBJ) main.cpp -o $(NAME)
 
-src/$(OBJ_FOLDER0)/%.o: src/%.cpp src/class/Log/Log.hpp
+src/$(OBJ_FOLDER0)/%.o: src/%.cpp
 	@mkdir -p $(dir $@)
 	@if ! $(CC) -c $(FLAGS) $(INC) $< -o $@; then \
 		$(call shmol_cat_error, $(RED), $(RED_L)); \

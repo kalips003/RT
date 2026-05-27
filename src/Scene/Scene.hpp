@@ -1,3 +1,6 @@
+#ifndef SCENE_HPP
+#define SCENE_HPP
+
 #include <vector>
 #include <memory>
 #include "IObjects.hpp"
@@ -21,3 +24,4 @@ private:
     // RessourceManager    _RManager;
 };
 
+#endif

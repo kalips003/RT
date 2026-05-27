@@ -1,3 +1,6 @@
+#ifndef PARSER_HPP
+#define PARSER_HPP
+
 #include <string>
 #include <Scene.hpp>
 #include <Log.hpp>
@@ -9,3 +12,5 @@ public:
     // bool loadMTL(const std::string& file, MaterialLibrary& mtl);
     // bool loadTexture(const std::string& file, Texture& tex);
 };
+
+#endif

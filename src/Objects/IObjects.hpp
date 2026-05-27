@@ -1,4 +1,5 @@
-#pragma once
+#ifndef IOBJECTS_HPP
+#define IOBJECTS_HPP
 
 // #include "Ray.hpp"
 // #include "Hit.hpp"
@@ -20,3 +21,5 @@ public:
     // virtual bool intersect(const Ray& ray, Hit& hit) const = 0;
 
 };
+
+#endif

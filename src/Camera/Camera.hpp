@@ -1,3 +1,6 @@
+#ifndef CAMERA_HPP
+#define CAMERA_HPP
+
 #include "general.hpp"
 #include "Log.hpp"
 
@@ -18,3 +21,5 @@ public:
     Vec3    _axis;
     float   _fov = 60.0f;
 };
+
+#endif

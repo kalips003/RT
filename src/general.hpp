@@ -1,4 +1,8 @@
+#ifndef GENERAL_HPP
+#define GENERAL_HPP
+
 #include <cstdint>
+#include <string>
 
 struct Color {
     double a = 1.0;
@@ -19,9 +23,13 @@ struct Vec3 {
     double z = 0.0;
 };
 
+#include <unordered_map>
 ///////////////////////////////////////////////////////////////////////////////]
 struct TokenLine {
     std::string objectType;              // "circle", "sphere"
     std::unordered_map<std::string, std::string> kv; // size=<value>
 };
-typedef std::vector<TokenLine>  tokens;
+
+
+
+#endif
