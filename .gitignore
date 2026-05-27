@@ -1,0 +1,5 @@
+data/.gitmsg
+*.o
+webserv
+compile_commands.json
+log/*
