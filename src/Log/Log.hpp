@@ -12,27 +12,22 @@
 #define LVL_DEBUG			(1 << 4)  // 0b010000
 #define LVL_LOG				(1 << 5)  // 0b100000
 
-// LVL_ERROR_SYSTEM | LVL_ERROR | LVL_WARNING | LVL_INFO | LVL_DEBUG | LVL_LOG)
-// LOGGING OUTPUT
-#ifndef LOG_LEVEL
-# define LOG_LEVEL ( LVL_ERROR_SYSTEM | LVL_ERROR | LVL_DEBUG | LVL_LOG)
-#endif
+#define T_NONE      0
+#define T_ABS       (1 << 0)
+#define T_SINCE     (1 << 1)
+#define T_DELTA     (1 << 2)
 
-// TERMINAL OUTPUT
-#ifndef PRINT_LEVEL
-# define PRINT_LEVEL ( LVL_ERROR_SYSTEM | LVL_ERROR | LVL_WARNING | LVL_INFO)
-#endif
-
+///////////////////////////////////////////////////////////////////////////////]
 
 #define LOG_PATH "log/"
 
 // LOG STAMP FOR TERMINAL OUTPUT 
-#define ERROR_SYS_P	"[ " C_510 "- SYS ERROR -" RESET " ] "
-#define ERROR_P		"[" C_510 " ERROR " RESET "] "
-#define WARNING_P	"[" C_441 "WARNING" RESET "] "
-#define INFO_P		"[" C_150 " INFO  " RESET "] "
-#define DEBUG_P		"[" C_124 " DEBUG " RESET "] "
-#define LOG_P		"[" C_035 "  L0G  " RESET "] "
+#define ERROR_SYS_P	RESET "[ " C_500 "- SYS ERROR -" RESET " ] "
+#define ERROR_P		RESET "[" C_510 " ERROR " RESET "] "
+#define WARNING_P	RESET "[" C_441 "WARNING" RESET "] "
+#define INFO_P		RESET "[" C_150 " INFO  " RESET "] "
+#define DEBUG_P		RESET "[" C_124 " DEBUG " RESET "] "
+#define LOG_P		RESET "[" C_035 "  L0G  " RESET "] "
 
 #define OTHER_P		"<<<" C_520 " HERE " RESET ">>> "
 
@@ -46,7 +41,10 @@
 
 // Log.hpp
 #pragma once
+#include "define_levels.hpp"
+
 #include <sstream>
+#include <chrono>
 
 ///////////////////////////////////////////////////////////////////////////////]
 class Log {
@@ -54,6 +52,7 @@ class Log {
 private:
 	int		_fd;  // log file descriptor
 	bool	_status;
+	std::chrono::steady_clock::time_point _start;
 ///////////////////////////////////////////////////////////////////////////////]
 /*** Unique instantiation ****/
 private:
@@ -64,9 +63,14 @@ public:
 
 private:
 	void		openFile(const std::string& path);
-	bool		createLogging(const std::string& prefix = "webserv_log");
+	bool		createLogging(const std::string& prefix = "log");
 	std::string	removeColors(const std::ostringstream& msg);
 
+//-----------------------------------------------------------------------------]
+// time
+	std::string getCurrentTime(bool isFile);
+	std::string buildTime(bool isFile, int lvl);
+	double 		getSinceStart();
 //-----------------------------------------------------------------------------]
 	/*** LOG FUNCTIONS ***/
 public:
@@ -90,54 +94,107 @@ public:
 // usage: LOG_ERROR_MSG("Failed to open file: " << path << ", errno=" << errno);
 ///////////////////////////////////////////////////////////////////////////////]
 
-#ifndef LOG_HERE
-# define LOG_HERE(x) { std::ostringstream oss; oss << x; Log::instance().log_here(oss); }
-#endif
+// #ifndef LOG_HERE
+// # define LOG_HERE(x) { std::ostringstream oss; oss << x; Log::instance().log_here(oss); }
+// #endif
 
-// / LVL_ERROR_SYSTEM
+// // / LVL_ERROR_SYSTEM
+// #if (PRINT_LEVEL | LOG_LEVEL) & LVL_ERROR_SYSTEM
+// # define LOG_ERROR_SYS(x) { std::ostringstream oss; oss << x; Log::instance().log_error_sys(oss); }
+// #else
+// # define LOG_ERROR_SYS(x) do {} while(0)
+// #endif
+
+// // LOG_ERROR
+// #if (PRINT_LEVEL | LOG_LEVEL) & LVL_ERROR
+// # define LOG_ERROR(x) { std::ostringstream oss; oss << x; Log::instance().log_error(oss); }
+// #else
+// # define LOG_ERROR(x) do {} while(0)
+// #endif
+
+
+// // LVL_WARNING
+// #if (PRINT_LEVEL | LOG_LEVEL) & LVL_WARNING
+// # define LOG_WARNING(x) { std::ostringstream oss; oss << x; Log::instance().log_warning(oss); }
+// #else
+// # define LOG_WARNING(x) do {} while(0)
+// #endif
+
+
+// // LVL_INFO
+// #if (PRINT_LEVEL | LOG_LEVEL) & LVL_INFO
+// # define LOG_INFO(x) { std::ostringstream oss; oss << x; Log::instance().log_info(oss); }
+// #else
+// # define LOG_INFO(x) do {} while(0)
+// #endif
+
+
+// // LVL_DEBUG
+// #if (PRINT_LEVEL | LOG_LEVEL) & LVL_DEBUG
+// # define LOG_DEBUG(x) { std::ostringstream oss; oss << x; Log::instance().log_debug(oss); }
+// #else
+// # define LOG_DEBUG(x) do {} while(0)
+// #endif
+
+// // LVL_LOG
+// #if (PRINT_LEVEL | LOG_LEVEL) & LVL_LOG
+// # define LOG_LOG(x) { std::ostringstream oss; oss << x; Log::instance().log_log(oss); }
+// #else
+// # define LOG_LOG(x) do {} while(0)
+// #endif
+
+
+// --------------------------------------------------------------------------- >
+#define LOG_INTERNAL(func, x)                     \
+    do {                                         \
+        std::ostringstream oss;                  \
+        oss << x;                                \
+        Log::instance().func(oss);               \
+    } while (0)
+
+#define LOG_HERE(x)                                      \
+    do {                                                 \
+        std::ostringstream oss;                          \
+        oss << x;                                        \
+        Log::instance().log_here(oss);                   \
+    } while (0)
+
 #if (PRINT_LEVEL | LOG_LEVEL) & LVL_ERROR_SYSTEM
-# define LOG_ERROR_SYS(x) { std::ostringstream oss; oss << x; Log::instance().log_error_sys(oss); }
+# define LOG_ERROR_SYS(x) LOG_INTERNAL(log_error_sys, x)
 #else
 # define LOG_ERROR_SYS(x) do {} while(0)
 #endif
 
-// LOG_ERROR
 #if (PRINT_LEVEL | LOG_LEVEL) & LVL_ERROR
-# define LOG_ERROR(x) { std::ostringstream oss; oss << x; Log::instance().log_error(oss); }
+# define LOG_ERROR(x) LOG_INTERNAL(log_error, x)
 #else
 # define LOG_ERROR(x) do {} while(0)
 #endif
 
-
-// LVL_WARNING
 #if (PRINT_LEVEL | LOG_LEVEL) & LVL_WARNING
-# define LOG_WARNING(x) { std::ostringstream oss; oss << x; Log::instance().log_warning(oss); }
+# define LOG_WARNING(x) LOG_INTERNAL(log_warning, x)
 #else
 # define LOG_WARNING(x) do {} while(0)
 #endif
 
-
-// LVL_INFO
 #if (PRINT_LEVEL | LOG_LEVEL) & LVL_INFO
-# define LOG_INFO(x) { std::ostringstream oss; oss << x; Log::instance().log_info(oss); }
+# define LOG_INFO(x) LOG_INTERNAL(log_info, x)
 #else
 # define LOG_INFO(x) do {} while(0)
 #endif
 
-
-// LVL_DEBUG
 #if (PRINT_LEVEL | LOG_LEVEL) & LVL_DEBUG
-# define LOG_DEBUG(x) { std::ostringstream oss; oss << x; Log::instance().log_debug(oss); }
+# define LOG_DEBUG(x) LOG_INTERNAL(log_debug, x)
 #else
 # define LOG_DEBUG(x) do {} while(0)
 #endif
 
-// LVL_LOG
 #if (PRINT_LEVEL | LOG_LEVEL) & LVL_LOG
-# define LOG_LOG(x) { std::ostringstream oss; oss << x; Log::instance().log_log(oss); }
+# define LOG_LOG(x) LOG_INTERNAL(log_log, x)
 #else
 # define LOG_LOG(x) do {} while(0)
 #endif
+// --------------------------------------------------------------------------- >
 
 
 #endif

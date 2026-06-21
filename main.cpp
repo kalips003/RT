@@ -1,4 +1,4 @@
-#include "Engine.hpp"
+#include "Log.hpp"
 #include <iostream>
 
 ///////////////////////////////////////////////////////////////////////////////]
@@ -9,12 +9,18 @@ int main(int ac, char** av) {
         return 1;
     }
 
-    Engine app;
+	Log& logger = Log::instance();
+	if (!logger.getStatus()) {
+		std::cerr << RED "Log failed to setup" RESET << std::endl;
+		return 0;
+	}
+    
+    // Engine app;
 
-    if (!app.init(av[1]))
-        return 1;
+    // if (!app.init(av[1]))
+    //     return 1;
 
-    app.run();
+    // app.run();
 
     return 0;
 }

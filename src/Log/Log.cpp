@@ -1,6 +1,5 @@
 #include "Log.hpp"
 
-#include <cerrno>
 #include <iostream>
 #include <sstream>
 #include <iomanip>
@@ -18,108 +17,10 @@ void	Log::log(const std::string& prefix, const std::string& msg) {
 	std::cout << prefix << msg << std::endl;
 }
 
-//-----------------------------------------------------------------------------]
-/**	 */
-void Log::log_here(const std::ostringstream& msg) {
-
-	std::cerr << OTHER_P << msg.str() << std::endl;
-}
-
-///////////////////////////////////////////////////////////////////////////////]
-/***						LOG FUNCTIONS					 				***/
-///////////////////////////////////////////////////////////////////////////////]
-
-//-----------------------------------------------------------------------------]
-/**	 */
-void Log::log_error_sys(const std::ostringstream& msg) {
-#if LOG_LEVEL & LVL_ERROR_SYSTEM
-	std::string s = ERROR_SYS_F + removeColors(msg) + " (" + strerror(errno) + ")\n";
-	if (_fd >= 0)
-		write(_fd, s.c_str(), s.size());
-#endif
-
-#if PRINT_LEVEL & LVL_ERROR_SYSTEM
-	std::cerr << ERROR_SYS_P << msg.str() << " (" << strerror(errno) << ")\n";
-#endif
-	(void)msg;
-}
-
-//-----------------------------------------------------------------------------]
-void Log::log_error(const std::ostringstream& msg) {
-#if LOG_LEVEL & LVL_ERROR
-	std::string s = ERROR_F + removeColors(msg) + "\n";
-	if (_fd >= 0)
-		write(_fd, s.c_str(), s.size());
-#endif
-
-#if PRINT_LEVEL & LVL_ERROR
-	std::cout << ERROR_P << msg.str() << std::endl;
-#endif
-	(void)msg;
-}
-
-
-//-----------------------------------------------------------------------------]
-void Log::log_warning(const std::ostringstream& msg) {
-#if LOG_LEVEL & LVL_WARNING
-	std::string s = WARNING_F + removeColors(msg) + "\n";
-	if (_fd >= 0)
-		write(_fd, s.c_str(), s.size());
-#endif
-
-#if PRINT_LEVEL & LVL_WARNING
-	std::cout << WARNING_P << msg.str() << std::endl;
-#endif
-	(void)msg;
-}
-
-//-----------------------------------------------------------------------------]
-void Log::log_info(const std::ostringstream& msg) {
-#if LOG_LEVEL & LVL_INFO
-	std::string s = INFO_F + removeColors(msg) + "\n";
-	if (_fd >= 0)
-		write(_fd, s.c_str(), s.size());
-#endif
-
-#if PRINT_LEVEL & LVL_INFO
-	std::cout << INFO_P << msg.str() << std::endl;
-#endif
-	(void)msg;
-}
-
-//-----------------------------------------------------------------------------]
-void Log::log_debug(const std::ostringstream& msg) {
-#if LOG_LEVEL & LVL_DEBUG
-	std::string s = DEBUG_F + removeColors(msg) + "\n";
-	if (_fd >= 0)
-		write(_fd, s.c_str(), s.size());
-#endif
-
-#if PRINT_LEVEL & LVL_DEBUG
-	std::cout << DEBUG_P << msg.str() << std::endl;
-#endif
-	(void)msg;
-}
-
-//-----------------------------------------------------------------------------]
-void Log::log_log(const std::ostringstream& msg) {
-#if LOG_LEVEL & LVL_LOG
-	std::string s = LOG_F + removeColors(msg) + "\n";
-	if (_fd >= 0)
-		write(_fd, s.c_str(), s.size());
-#endif
-
-#if PRINT_LEVEL & LVL_LOG
-	std::cout << LOG_P << msg.str() << std::endl;
-#endif
-	(void)msg;
-}
-
-
 ///////////////////////////////////////////////////////////////////////////////]
 ///////////////////////////////////////////////////////////////////////////////]
 ///////////////////////////////////////////////////////////////////////////////]
-Log::Log() : _fd(-1), _status(true) {
+Log::Log() : _fd(-1), _status(true), _start(std::chrono::steady_clock::now()) {
 #if LOG_LEVEL > LVL_NONE
 	_status = createLogging();
 #endif

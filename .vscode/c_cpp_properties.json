@@ -3,15 +3,15 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/**",
                 "${workspaceFolder}/inc",
-                "${workspaceFolder}/src/class"
+                "${workspaceFolder}/src",
+                "${workspaceFolder}/src/**"
             ],
             "defines": [],
-            "compilerPath": "/usr/lib64/ccache/clang",
+            "compilerPath": "/usr/bin/g++",
             "cStandard": "c17",
             "cppStandard": "c++17",
-            "intelliSenseMode": "linux-clang-x64"
+            "intelliSenseMode": "linux-gcc-x64"
         }
     ],
     "version": 4

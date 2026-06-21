@@ -1,6 +1,13 @@
-NAME = RT
+NAME := RT
 
 all: $(NAME)
+	@echo "SRCS:"
+	@echo $(SRCS)
+	@echo ""
+	@echo "OBJS:"
+	@echo $(OBJS)
+	@echo ""
+	@echo "NAME: $(NAME)"
 
 # ╭──────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
 # │─██████████████─██████████████─██████████████─██████████████─██████████─██████──────────██████─██████████████─│
@@ -17,7 +24,8 @@ all: $(NAME)
 # ╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 
 # MAP = map/scene/space.rt
-MAP = map/scene/map2_tr.rt
+MAP_FOLDER := maps
+MAP = $(MAP_FOLDER)/_copy.rt
 
 map: $(NAME)
 	@$(call random_shmol_cat, teshting ... $@: miiniRT !!, 'hav fun ね? ($(word 1, $^))', $(CLS), );
@@ -27,7 +35,7 @@ map: $(NAME)
 a: $(NAME)
 	@$(call random_shmol_cat, teshting ... $@: miiniRT !!, 'hav fun ね? ($(word 1, $^))', $(CLS), );
 	@rm -f log/*
-	./$(word 1, $^) map/scene1.rt
+	./$(NAME) $(MAP)
 
 b: $(NAME)
 	@$(call random_shmol_cat, teshting ... $@: miiniRT !!, 'hav fun ね? ($(word 1, $^))', $(CLS), );
@@ -95,26 +103,27 @@ m2: $(NAME)
 # │─██████████████─██████████████─██████████████─██████──██████████─██████████████─██████████████─██████████████─│
 # ╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 
-CC = g++
-# FLAGS = -Wextra -Wall -Werror -g -std=c++98
-FLAGS = -g
-FLAGS_LESS = -g -std=c++98
+CXX := g++
+CXXFLAGS := -Wall -std=c++17
+# CXXFLAGS := -Wextra -Wall -Werror -std=c++17
+DEPFLAGS := -MMD -MP
+
+SRC_DIR := src
+BUILD_DIR := build
+
+# every directory under src/, including src/ itself
+SRC_DIRS := $(shell find $(SRC_DIR) -type d)
+# 	INCLUDES # “when you see #include "foo.hpp", look in these folders”
+INCLUDES := $(addprefix -I,$(SRC_DIRS))
+INCLUDES += -Iinc
+
+# all .cpp files anywhere under src/
+SRCS := $(shell find $(SRC_DIR) -name '*.cpp')
 
 
-# beeing cleaned
-OBJ_FOLDER0 = _obj
-OBJ_FOLDER = src/$(OBJ_FOLDER0)
-
-SRC := $(shell find src -name '*.cpp')
-OBJ := $(SRC:src/%.cpp=src/$(OBJ_FOLDER0)/%.o)
-HEAD = $(shell find src -name '*.hpp') $(shell find inc -name '*.hpp')
-
-FOLDERS_HEADERS := $(wildcard src/*/ src/*/*/ src/*/*/*/)
-FOLDERS_INCLUDE := $(addprefix -I, $(FOLDERS_HEADERS))
-
-# 	INCLUDES # 
-# -Iinc = -IncludeHeaders here: inc
-INC = -Iinc -Isrc $(FOLDERS_INCLUDE)
+# mirror src/ structure inside build/ (src/foo/bar.cpp -> build/foo/bar.o)
+OBJS := $(SRCS:$(SRC_DIR)/%.cpp=$(BUILD_DIR)/%.o) $(BUILD_DIR)/main.o
+DEPS := $(OBJS:.o=.d)
 
 # 	LIBRARIES # 
 # -Llib = -L: where to find .so .a: lib
@@ -124,34 +133,34 @@ FLAG_SDL = -lSDL2
 
 # -rpath,/custom/lib => -rpath tells the linker to embed a runtime library search path into the binary
 
-# SFML #
-SFML_HEADER = lib/sfml/SFML
-SFML_IH = -I$(SFML_HEADER)
-SFML_LIB = -Llib/sfml
-SFML_LINK = -lsfml-graphics -lsfml-window -lsfml-system
-SFML = $(SFML_LINK)
 
 # ╭──────────────────────────────────────────────────────────────────────╮
 # │                  	 	       PROJECT                   	         │
 # ╰──────────────────────────────────────────────────────────────────────╯
 
-$(NAME): $(OBJ) main.cpp $(HEAD)
+$(NAME): $(OBJS)
 	@clear
-	@if ! $(CC) $(FLAGS) $(INC) $(OBJ) main.cpp $(LIB) -o $(NAME); then \
+	@if ! $(CXX) $(OBJS) -o $(NAME); then \
 		$(call print_cat, "", $(RED), $(GOLD), $(RED_L), $(call pad_word, 10, "ERROR"), $(call pad_word, 12, "COMPILING..")); \
 		exit 1; \
 	fi
 	@$(call print_cat, $(CLEAR), $(GOLD), $(GREEN1), $(GREEN1), $(call pad_word, 10, $(NAME)), $(call pad_word, 12, "Compiled~"));
 
-abc: clean_silent $(OBJ) main.cpp $(HEAD)
-	$(CC) $(FLAGS) $(INC) $(OBJ) main.cpp -o $(NAME)
-
-src/$(OBJ_FOLDER0)/%.o: src/%.cpp
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
 	@mkdir -p $(dir $@)
-	@if ! $(CC) -c $(FLAGS) $(INC) $< -o $@; then \
+	@if ! $(CXX) $(CXXFLAGS) $(INCLUDES) $(DEPFLAGS) -c $< -o $@; then \
 		$(call shmol_cat_error, $(RED), $(RED_L)); \
 		exit 1; \
 	fi
+
+$(BUILD_DIR)/main.o: main.cpp
+	@mkdir -p $(dir $@)
+	@if ! $(CXX) $(CXXFLAGS) $(INCLUDES) $(DEPFLAGS) -c $< -o $@; then \
+		$(call shmol_cat_error, $(RED), $(RED_L)); \
+		exit 1; \
+	fi
+
+-include $(DEPS)
 
 # ╭──────────────────────────────────────────────────────────────────────╮
 # │                  	 	       MAKE TEST                   	         │
@@ -223,18 +232,13 @@ git: fclean
 # --------------------------------------------------------------------------------- >
 # 																				CLEAN
 clean:
-	@rm -f $(TEST_FOLDER)/a.out
-	@rm -rf log
-	@rm -f www/web_cat/donations/*
-	@rm -f www/tmp/*
-	@rm -f $(CLIENT)
-	@rm -rf $(OBJ_FOLDER)
+	@rm -rf $(BUILD_DIR)
 	@$(call print_cat, $(CLEAR), $(C_225), $(C_320), $(C_450), $(call pad_word, 10, "Objects"), $(call pad_word, 12, "Exterminated"));
 
 clean_silent:
 	@clear
 	@rm -rf $(NAME)
-	@rm -rf $(OBJ_FOLDER)
+	@rm -rf $(BUILD_DIR)
 
 fclean: clean
 	@rm -rf $(NAME)
