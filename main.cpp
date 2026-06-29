@@ -4,6 +4,8 @@
 ///////////////////////////////////////////////////////////////////////////////]
 int main(int ac, char** av) {
 
+    std::cout << RED "Hi gorgeous!~" RESET << std::endl;
+
     if (ac != 2) {
         std::cout << RED "one map required" RESET << std::endl;
         return 1;
