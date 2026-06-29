@@ -7,7 +7,7 @@
 
 class Parser {
 public:
-    static bool loadRT(const std::string& file, Scene& scene);
+    // static bool loadRT(const std::string& file, Scene& scene);
     // bool loadOBJ(const std::string& file, Mesh& mesh);
     // bool loadMTL(const std::string& file, MaterialLibrary& mtl);
     // bool loadTexture(const std::string& file, Texture& tex);

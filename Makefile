@@ -37,26 +37,6 @@ a: $(NAME)
 	@rm -f log/*
 	./$(NAME) $(MAP)
 
-b: $(NAME)
-	@$(call random_shmol_cat, teshting ... $@: miiniRT !!, 'hav fun ね? ($(word 1, $^))', $(CLS), );
-	./$(word 1, $^) map/scene2.rt
-
-c: $(NAME)
-	@$(call random_shmol_cat, teshting ... $@: miiniRT !!, 'hav fun ね? ($(word 1, $^))', $(CLS), );
-	./$(word 1, $^) map/scene3.rt
-
-d: $(NAME)
-	@$(call random_shmol_cat, teshting ... $@: miiniRT !!, 'hav fun ね? ($(word 1, $^))', $(CLS), );
-	./$(word 1, $^) map/scene4.rt
-	
-e: $(NAME)
-	@$(call random_shmol_cat, teshting ... $@: miiniRT !!, 'hav fun ね? ($(word 1, $^))', $(CLS), );
-	./$(word 1, $^) map/scene5.rt
-
-f: $(NAME)
-	@$(call random_shmol_cat, teshting ... $@: miiniRT !!, 'hav fun ね? ($(word 1, $^))', $(CLS), );
-	./$(word 1, $^) map/scene6.rt
-
 # RUN MINISHELL & VALGRING 2> out/valgrind
 v: $(NAME)
 	@$(call random_shmol_cat, "vlgrininnng ... $(word 1, $^)!", "$(ARG2)", $(CLS), );
@@ -69,24 +49,6 @@ m: $(NAME)
 		$(call rules); \
 		./$(word 1, $^) $$map; \
 	done
-
-define rules
-	echo "movement is done with arrow keys + home (up) / end (down)"; \
-	echo "rotation wasd + qe"; \
-	echo "left clic + drag moves the camera"; \
-	echo "right clic an object to select it"; \
-	echo "\tmovement is applied to the selected object"; \
-	echo "\tright clic the same object to unselect it"; \
-	echo "mouse wheel control the speed of movement"; \
-	echo "(n) toogle between cameras"; \
-	echo "The input file update in real time"
-endef
-
-ULIMIT = 3000
-m2: $(NAME)
-	@$(call random_shmol_cat, "\'trying to make shit crash", "try n break it.. にゃ?", $(CLS), );
-	@(ulimit -s $(ULIMIT); ./$(word 1, $^) $(ARG))
-	ulimit -s 8192
 
 
 # ╭──────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
@@ -103,7 +65,7 @@ m2: $(NAME)
 # │─██████████████─██████████████─██████████████─██████──██████████─██████████████─██████████████─██████████████─│
 # ╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 
-CXX := g++
+CXX := c++
 CXXFLAGS := -Wall -std=c++17
 # CXXFLAGS := -Wextra -Wall -Werror -std=c++17
 DEPFLAGS := -MMD -MP
@@ -113,7 +75,8 @@ BUILD_DIR := build
 
 # every directory under src/, including src/ itself
 SRC_DIRS := $(shell find $(SRC_DIR) -type d)
-# 	INCLUDES # “when you see #include "foo.hpp", look in these folders”
+
+### 	INCLUDES 	#### “when you see #include "foo.hpp", look in these folders”
 INCLUDES := $(addprefix -I,$(SRC_DIRS))
 INCLUDES += -Iinc
 
@@ -125,7 +88,8 @@ SRCS := $(shell find $(SRC_DIR) -name '*.cpp')
 OBJS := $(SRCS:$(SRC_DIR)/%.cpp=$(BUILD_DIR)/%.o) $(BUILD_DIR)/main.o
 DEPS := $(OBJS:.o=.d)
 
-# 	LIBRARIES # 
+### 	LIBRARIES	 ###
+
 # -Llib = -L: where to find .so .a: lib
 # -lXXX = link libXXX.so or libXXX.a
 LIB = $(FLAG_SDL)
@@ -135,12 +99,23 @@ FLAG_SDL = -lSDL2
 
 
 # ╭──────────────────────────────────────────────────────────────────────╮
+# │                  	 	       OPENGL                   	         │
+# ╰──────────────────────────────────────────────────────────────────────╯
+INCLUDES += -I./glad/include
+LD_FLAGS  = -lGL -lglfw
+OBJS += glad/src/glad.o
+
+glad/src/glad.o: glad/src/glad.c
+	$(CXX) $(CXXFLAGS)  $(INCLUDES) -c $< -o $@
+
+
+# ╭──────────────────────────────────────────────────────────────────────╮
 # │                  	 	       PROJECT                   	         │
 # ╰──────────────────────────────────────────────────────────────────────╯
 
 $(NAME): $(OBJS)
 	@clear
-	@if ! $(CXX) $(OBJS) -o $(NAME); then \
+	@if ! $(CXX) $(OBJS) -o $(NAME) $(LD_FLAGS); then \
 		$(call print_cat, "", $(RED), $(GOLD), $(RED_L), $(call pad_word, 10, "ERROR"), $(call pad_word, 12, "COMPILING..")); \
 		exit 1; \
 	fi

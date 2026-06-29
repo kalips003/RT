@@ -5,7 +5,8 @@
             "includePath": [
                 "${workspaceFolder}/inc",
                 "${workspaceFolder}/src",
-                "${workspaceFolder}/src/**"
+                "${workspaceFolder}/src/**",
+                "${workspaceFolder}/glad/include"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/g++",
