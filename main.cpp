@@ -1,11 +1,10 @@
 #include "Log.hpp"
 #include "App.hpp"
+#include "defines.hpp"
 #include <iostream>
 
 ///////////////////////////////////////////////////////////////////////////////]
 int main(int ac, char** av) {
-
-	std::cout << RED "Hi gorgeous!~" RESET << std::endl;
 
 	if (ac != 2) {
 		std::cout << RED "one map required" RESET << std::endl;
@@ -19,7 +18,8 @@ int main(int ac, char** av) {
 	}
 		
 	try {
-		App app(800, 600, "Engine");
+		App app(SIZE_SCREEN_X, SIZE_SCREEN_Y, "Engine");
+		LOG_HERE(RED "we did it !" RESET);
 		app.run();
 	} catch (const std::exception& e) {
 		std::cerr << "Fatal: " << e.what() << std::endl;

@@ -33,7 +33,7 @@ map: $(NAME)
 
 # RUN MAPS
 a: $(NAME)
-	@$(call random_shmol_cat, teshting ... $@: miiniRT !!, 'hav fun ね? ($(word 1, $^))', $(CLS), );
+# 	@$(call random_shmol_cat, teshting ... $@: miiniRT !!, 'hav fun ね? ($(word 1, $^))', , );
 	@rm -f log/*
 	./$(NAME) $(MAP)
 
@@ -114,12 +114,11 @@ glad/src/glad.o: glad/src/glad.c
 # ╰──────────────────────────────────────────────────────────────────────╯
 
 $(NAME): $(OBJS)
-	@clear
 	@if ! $(CXX) $(OBJS) -o $(NAME) $(LD_FLAGS); then \
 		$(call print_cat, "", $(RED), $(GOLD), $(RED_L), $(call pad_word, 10, "ERROR"), $(call pad_word, 12, "COMPILING..")); \
 		exit 1; \
 	fi
-	@$(call print_cat, $(CLEAR), $(GOLD), $(GREEN1), $(GREEN1), $(call pad_word, 10, $(NAME)), $(call pad_word, 12, "Compiled~"));
+# 	@$(call print_cat, , $(GOLD), $(GREEN1), $(GREEN1), $(call pad_word, 10, $(NAME)), $(call pad_word, 12, "Compiled~"));
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
 	@mkdir -p $(dir $@)

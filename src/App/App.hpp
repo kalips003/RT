@@ -1,23 +1,22 @@
 #pragma once
 
 #include "Log.hpp"
+#include "WindowManager.hpp"
 
-struct GLFWwindow;
 
 class App {
 
 public:
 	App(int width, int height, const char* title);
-	~App();
+	~App() = default;
 
 	void run();
 
 private:
 	void processInput();
 
-	GLFWwindow*	_window;
-	int			_width;
-	int			_height;
+	WindowManager	_windowManager;
+	Window&			_mainWindow;
 };
 
 

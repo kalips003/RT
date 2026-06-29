@@ -1,4 +1,5 @@
 #include "App.hpp"
+#include "Log.hpp"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -8,68 +9,30 @@
 
 /* ================================================================================ */
 
-static void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
-	(void)window;
-	glViewport(0, 0, width, height);
-}
-
-/* ================================================================================ */
-
 App::App(int width, int height, const char* title)
-	: _window(nullptr), _width(width), _height(height)
-{
-	if (!glfwInit())
-		throw std::runtime_error("Failed to init GLFW");
-
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-#ifdef __APPLE__
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#endif
-
-	_window = glfwCreateWindow(_width, _height, title, nullptr, nullptr);
-	if (!_window) {
-		glfwTerminate();
-		throw std::runtime_error("Failed to create GLFW window");
-	}
-
-	glfwMakeContextCurrent(_window);
-	glfwSetFramebufferSizeCallback(_window, framebufferSizeCallback);
-
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-		glfwTerminate();
-		throw std::runtime_error("Failed to init GLAD");
-	}
-
-	glViewport(0, 0, _width, _height);
-}
-
-/* ================================================================================ */
-
-App::~App() {
-	glfwDestroyWindow(_window);
-	glfwTerminate();
-}
+    : _windowManager()
+    , _mainWindow(_windowManager.createWindow(width, height, title))
+{}
 
 /* ================================================================================ */
 
 void App::run() {
-	while (!glfwWindowShouldClose(_window)) {
+	while (!_mainWindow.shouldClose()) {
 		processInput();
 
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		glfwSwapBuffers(_window);
-		glfwPollEvents();
+		_mainWindow.swapBuffers();
+		_windowManager.pollEvents();
 	}
 }
 
 /* ================================================================================ */
+/* ================================================================================ */
+/* ================================================================================ */
 
 void App::processInput() {
-	if (glfwGetKey(_window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-		glfwSetWindowShouldClose(_window, true);
+	if (glfwGetKey(_mainWindow.get(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
+		glfwSetWindowShouldClose(_mainWindow.get(), true);
 }
