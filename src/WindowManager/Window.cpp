@@ -18,26 +18,38 @@ Window::Window(int width, int height, const std::string& title)
 	: _handle(nullptr), _width(width), _height(height)
 {
 
-// ==========================================
+// -----------------------------------------
 // 3. CREATE THE WINDOW
-// ==========================================
+// -----------------------------------------
 	// Actually requests the OS to spawn the window.
 	_handle = glfwCreateWindow(_width, _height, title.c_str(), nullptr, nullptr);
 	if (!_handle)
 		throw std::runtime_error("Failed to create GLFW window: " + title);
 
-// ==========================================
+// -----------------------------------------
 // 4. BIND OPENGL TO THE WINDOW
-// ==========================================
+// -----------------------------------------
 	// Tells the computer: "All future OpenGL drawing commands should look at this specific window."
 	glfwMakeContextCurrent(_handle);
 	// Registers a custom callback function so if the user resizes the window, 
     // OpenGL will be notified immediately to adjust the image.
 	glfwSetFramebufferSizeCallback(_handle, framebufferSizeCallback);
 
-// ==========================================
+// -----------------------------------------
+// 5. INITIALIZE GLAD (The Function Loader)
+// -----------------------------------------
+    // Because OpenGL functions are built into your GPU drivers, GLAD needs to dynamically look up where those functions live in your system's memory.
+    // 'glfwGetProcAddress' passes GLFW's internal system locator tool over to GLAD.
+	static bool gladLoaded = false;
+	if (!gladLoaded) {
+		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+			throw std::runtime_error("Failed to init GLAD");
+		gladLoaded = true;
+	}
+
+// -----------------------------------------
 // 6. INITIALIZE THE OPENGL VIEWPORT
-// ==========================================
+// -----------------------------------------
     // Tells OpenGL the coordinate mapping space for rendering inside the window.
     // (0, 0) is the bottom-left corner, mapping all the way to the width and height.
 	glViewport(0, 0, _width, _height);
@@ -51,6 +63,8 @@ Window::~Window() {
 }
 
 
+/* ================================================================================ */
+/* ================================================================================ */
 /* ================================================================================ */
 
 bool Window::shouldClose() const {

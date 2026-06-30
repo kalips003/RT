@@ -19,7 +19,6 @@ int main(int ac, char** av) {
 		
 	try {
 		App app(SIZE_SCREEN_X, SIZE_SCREEN_Y, "Engine");
-		LOG_HERE(RED "we did it !" RESET);
 		app.run();
 	} catch (const std::exception& e) {
 		std::cerr << "Fatal: " << e.what() << std::endl;
