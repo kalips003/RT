@@ -2,7 +2,7 @@
 
 #include "Log.hpp"
 #include "WindowManager.hpp"
-
+#include "InputManager.hpp"
 
 class App {
 
@@ -17,6 +17,7 @@ private:
 
 	WindowManager	_windowManager;
 	Window&			_mainWindow;
+	InputManager  _inputManager;
 };
 
 
