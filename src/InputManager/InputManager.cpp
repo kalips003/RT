@@ -13,6 +13,7 @@ InputManager::InputManager(Window& window)
 
     glfwSetKeyCallback(handle, keyCallback);
     glfwSetCursorPosCallback(handle, cursorCallback);
+    glfwSetMouseButtonCallback(handle, mouseButtonCallback);
 
     // seed mouse position so first delta isn't a huge jump
     glfwGetCursorPos(handle, &_lastMouseX, &_lastMouseY);
@@ -26,6 +27,7 @@ void InputManager::update() {
     _keyJustPressed.fill(false);
     _keyJustReleased.fill(false);
 
+    _mouseJustPressed.fill(false);
     _mouse.deltaX = 0.0;
     _mouse.deltaY = 0.0;
 }
@@ -46,11 +48,21 @@ bool InputManager::wasJustReleased(int key) const {
     return _keyJustReleased[key];
 }
 
+bool InputManager::isMouseDown(int button) const {
+    if (button < 0 || button >= MOUSE_COUNT) return false;
+    return _mouseDown[button];
+}
+
+bool InputManager::wasMouseJustPressed(int button) const {
+    if (button < 0 || button >= MOUSE_COUNT) return false;
+    return _mouseJustPressed[button];
+}
+
 /* ================================================================================ */
 void InputManager::keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     (void)scancode;  // raw hardware key code, we use the GLFW abstracted `key` instead
     (void)mods;      // modifier keys (shift, ctrl, alt) — not using them yet
-    
+
     // retrieve our InputManager from the window user pointer
     InputManager* self = static_cast<InputManager*>(glfwGetWindowUserPointer(window));
     if (!self || key < 0 || key >= KEY_COUNT) return;
@@ -76,4 +88,18 @@ void InputManager::cursorCallback(GLFWwindow* window, double x, double y) {
     self->_lastMouseY   = y;
     self->_mouse.x      = x;
     self->_mouse.y      = y;
+}
+
+/* ================================================================================ */
+void InputManager::mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
+    (void)mods;
+    InputManager* self = static_cast<InputManager*>(glfwGetWindowUserPointer(window));
+    if (!self || button < 0 || button >= MOUSE_COUNT) return;
+
+    if (action == GLFW_PRESS) {
+        self->_mouseDown[button]        = true;
+        self->_mouseJustPressed[button] = true;
+    } else if (action == GLFW_RELEASE) {
+        self->_mouseDown[button] = false;
+    }
 }

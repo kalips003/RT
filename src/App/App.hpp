@@ -3,6 +3,7 @@
 #include "Log.hpp"
 #include "WindowManager.hpp"
 #include "InputManager.hpp"
+#include "Renderer.hpp"
 
 class App {
 
@@ -14,10 +15,18 @@ public:
 
 private:
 	void processInput();
+    void update();
 
 	WindowManager	_windowManager;
 	Window&			_mainWindow;
-	InputManager  _inputManager;
+	InputManager  	_inputManager;
+	Renderer      	_renderer;
+
+    bool _drawTriangle = false;
+    bool _drawQuad     = false;
+    bool  _drawBlue     = false;
+    float _blueX        = 0.0f;   // NDC position of blue triangle
+    float _blueY        = 0.0f;
 };
 
 
