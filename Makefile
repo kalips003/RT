@@ -186,6 +186,39 @@ test2: $(OBJ) $(TEST_MAIN) $(HEAD)
 # │─────██░░██─────██░░░░░░░░░░██─██░░░░░░░░░░██─██░░░░░░░░░░██─██░░░░░░░░░░██─│
 # │─────██████─────██████████████─██████████████─██████████████─██████████████─│
 # ╰────────────────────────────────────────────────────────────────────────────╯
+# --------------------------------------------------------------------------------- >
+# CREATE THE CLASS
+TEMPLATE_PATH = "TEST/_template"
+OUTPUT_CLASS = TEST/class
+NEW_CLASS = Array
+
+new: 
+	@$(call random_shmol_cat, "Classes created for: ~", "$(NEW_CLASS)", $(CLS), );
+	@if [ ! -e $(OUTPUT_CLASS) ]; then \
+		mkdir -p $(OUTPUT_CLASS); \
+	fi
+	@for class in $(NEW_CLASS); do \
+		class_dir=$(OUTPUT_CLASS)/$$class; \
+		cpp_file=$$class_dir/$$class.cpp; \
+		hpp_file=$$class_dir/$$class.hpp; \
+		if [ ! -e $$class_dir ]; then \
+			mkdir -p $$class_dir; \
+		fi; \
+		if [ ! -e $$cpp_file ]; then \
+			cp $(TEMPLATE_PATH)/_.cpp $$cpp_file; \
+			sed -i "s/Default/$$class/g" ./$$cpp_file; \
+		else \
+			printf "$(C_410) Skipping $(RESET)$$cpp_file$(C_410) : file already exists.$(RESET)\n"; \
+		fi; \
+		if [ ! -e $$hpp_file ]; then \
+			cp $(TEMPLATE_PATH)/_.hpp ./$$hpp_file; \
+			sed -i "s/Default/$$class/g" $$hpp_file; \
+			upper=$$(echo $$class | tr 'a-z' 'A-Z'); \
+			sed -i "s/DEFAULT_HPP/$${upper}_HPP/g" $$hpp_file; \
+		else \
+			printf "$(C_410) Skipping $(RESET)$$hpp_file$(C_410) : file already exists.$(RESET)\n"; \
+		fi; \
+	done
 
 # --------------------------------------------------------------------------------- >
 VALGRIND = valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes -s --track-fds=yes --trace-children=yes $(V_FLAG)
@@ -207,6 +240,7 @@ git: fclean
 # 																				CLEAN
 clean:
 	@rm -rf $(BUILD_DIR)
+	@rm -rf $(OUTPUT_CLASS)
 	@$(call print_cat, $(CLEAR), $(C_225), $(C_320), $(C_450), $(call pad_word, 10, "Objects"), $(call pad_word, 12, "Exterminated"));
 
 clean_silent:

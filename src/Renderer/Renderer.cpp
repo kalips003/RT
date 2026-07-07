@@ -2,6 +2,8 @@
 #include <glad/glad.h>
 
 // hardcoded shaders for now — will move to files when ResourceManager exists
+// GLSL language, for GPU
+
 static const char* VERT_SRC = R"(
     #version 410 core
     layout (location = 0) in vec3 aPos;
