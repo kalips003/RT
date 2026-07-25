@@ -74,7 +74,7 @@ PRINT_TIME_FILTER:
 -------------------------------------------------- > */
 
 #ifndef PRINT_TIME_FILTER
-    #define PRINT_TIME_FILTER ( LVL_INFO | LVL_DEBUG | LVL_LOG )
+    #define PRINT_TIME_FILTER ( LVL_DEBUG )
 #endif
 
 /* -------------------------------------------------- >
@@ -83,7 +83,7 @@ LOG_TIME_FILTER:
 -------------------------------------------------- > */
 
 #ifndef LOG_TIME_FILTER
-    #define LOG_TIME_FILTER ( LVL_ERROR | LVL_WARNING | LVL_INFO | LVL_DEBUG | LVL_LOG )
+    #define LOG_TIME_FILTER ( LVL_DEBUG )
 #endif
 
 /* -------------------------------------------------- >

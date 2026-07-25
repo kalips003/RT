@@ -1,9 +1,13 @@
 #pragma once
 
+#include <string>
+
 #include "Log.hpp"
 #include "WindowManager.hpp"
 #include "InputManager.hpp"
 #include "Renderer.hpp"
+#include "SceneManager.hpp"
+#include "RessourceManager.hpp"
 
 class App {
 
@@ -12,6 +16,7 @@ public:
 	~App() = default;
 
 	void run();
+	void openRTFile(const std::string& file_name);
 
 private:
 	void processInput();
@@ -21,6 +26,8 @@ private:
 	Window&			_mainWindow;
 	InputManager  	_inputManager;
 	Renderer      	_renderer;
+	RessourceManager	_resourceManager;
+	SceneManager		_sceneManager;
 
     bool _drawTriangle = false;
     bool _drawQuad     = false;

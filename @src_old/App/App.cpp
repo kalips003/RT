@@ -1,5 +1,6 @@
 #include "App.hpp"
 #include "Log.hpp"
+#include "Parser.hpp"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -99,4 +100,11 @@ void App::processInput() {
 
 void App::update() {
     // empty for now — will hold movement, physics, scene updates
+}
+
+/* ================================================================================ */
+
+void App::openRTFile(const std::string& file_name) {
+    Scene newScene = Parser::parseRTFile(file_name, _resourceManager);
+    _sceneManager.addScene(std::move(newScene));
 }

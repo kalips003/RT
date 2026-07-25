@@ -9,7 +9,7 @@ public:
 
     ShaderProgram(const ShaderProgram&)            = delete;
     ShaderProgram& operator=(const ShaderProgram&) = delete;
-
+// 
     void bind()   const;
     void unbind() const;
 
@@ -17,9 +17,11 @@ public:
     void setVec2(const std::string& name, float x, float y) const;
     
     unsigned int id() const { return _id; }
-
+// 
 private:
     unsigned int compileShader(unsigned int type, const char* src);
 
+// 
+private:
     unsigned int _id;
 };

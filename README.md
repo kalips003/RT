@@ -29,3 +29,194 @@ permalink:
 ```bash
 https://glad.dav1d.de/#language=c&specification=gl&api=gl%3D3.3&api=gles1%3Dnone&api=gles2%3Dnone&api=glsc2%3Dnone&profile=core&loader=on
 ```
+
+
+
+### Given the architecture you've been building, a complete engine could look something like this:
+
+Application / Engine
+│
+├── Window Manager
+│     │
+│     ├── Window
+│     │     ├── OS window handle
+│     │     ├── OpenGL/Vulkan context
+│     │     └── Swap buffers
+│     │
+│     └── manages multiple windows (optional)
+│
+├── Input Manager
+│     │
+│     ├── Keyboard events
+│     ├── Mouse events
+│     ├── Controller events
+│     └── Event callbacks
+│
+├── Resource Manager
+│     │
+│     ├── Meshes
+│     │     └── OBJ / GLTF data
+│     │
+│     ├── Textures
+│     │
+│     ├── Materials
+│     │
+│     ├── Shaders
+│     │
+│     └── Caches loaded assets
+│
+├── Scene Manager
+│     │
+│     ├── Scene
+│     │     │
+│     │     ├── Scene Objects
+│     │     │      ├── Transform
+│     │     │      ├── Mesh reference
+│     │     │      ├── Material reference
+│     │     │      └── Components
+│     │     │
+│     │     ├── Lights
+│     │     ├── Cameras
+│     │     └── World settings
+│     │
+│     └── Scene switching/loading
+│
+├── Renderer
+│     │
+│     ├── Render pipeline
+│     │
+│     ├── GPU communication
+│     │
+│     ├── OpenGL/Vulkan backend
+│     │
+│     ├── Raster renderer
+│     │
+│     └── Ray tracer (your future part)
+│
+├── Camera System
+│     │
+│     ├── View matrix
+│     ├── Projection matrix
+│     └── Camera controls
+│
+├── Physics Engine (optional)
+│     │
+│     ├── Collision
+│     ├── Rigid bodies
+│     └── Simulation
+│
+├── Audio System (optional)
+│
+├── Animation System (optional)
+│     │
+│     ├── Skeletons
+│     ├── Bones
+│     └── Keyframes
+│
+├── Scripting System (optional)
+│     │
+│     └── Game logic
+│
+└── Editor / GUI Layer
+      │
+      ├── Scene hierarchy
+      ├── Inspector
+      ├── Asset browser
+      ├── Console
+      ├── Render settings
+      └── Debug tools
+
+The important relationships are:
+
+Resource side (things that exist once)
+ResourceManager
+
+Mesh
+Texture
+Material
+Shader
+Sound
+
+Example:
+
+Tree.obj
+    |
+    v
+Mesh resource
+
+Loaded once.
+
+Scene side (instances in the world)
+Scene
+
+TreeObject
+    position = (10,0,5)
+    mesh = TreeMesh*
+
+TreeObject2
+    position = (20,0,3)
+    mesh = TreeMesh*
+
+Multiple objects can share the same resource.
+
+Runtime loop
+
+Everything eventually meets in the main loop:
+
+while(running)
+{
+    InputManager.update();
+
+    SceneManager.update();
+
+    Renderer.render(scene);
+
+    WindowManager.present();
+}
+With the GUI added
+
+The GUI is usually not part of the engine core. It sits on top:
+
+                Editor GUI
+                   |
+                   v
+Application Layer
+                   |
+        +----------+----------+
+        |                     |
+ Scene Manager        Resource Manager
+        |
+ Renderer
+        |
+ GPU
+
+The editor asks the engine:
+
+"Give me the list of objects."
+"Change this object's position."
+"Load this mesh."
+"Change this material."
+
+It doesn't own those systems.
+
+One thing I would consider adding to your design later is an Entity/Component system. Instead of making SceneObject contain everything:
+
+SceneObject
+{
+    Mesh*
+    Material*
+    Camera*
+    Light*
+}
+
+you move toward:
+
+Entity
+{
+    TransformComponent
+    MeshComponent
+    LightComponent
+    CameraComponent
+}
+
+This is the architecture used by many modern engines because it scales much better. But your current separation (Scene → Objects → Resources) is already the right foundation.

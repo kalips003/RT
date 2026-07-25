@@ -1,28 +1,20 @@
 #include "Log.hpp"
-#include "App.hpp"
+#include "_A.hpp"
 #include "defines.hpp"
+
 #include <iostream>
+
+#include "App.hpp"
+#include "SceneManager.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////]
 int main(int ac, char** av) {
 
-	if (ac != 2) {
-		std::cout << RED "one map required" RESET << std::endl;
-		return 1;
-	}
+	SceneManager manager;
 
-	Log& logger = Log::instance();
-	if (!logger.getStatus()) {
-		std::cerr << RED "Log failed to setup" RESET << std::endl;
-		return 0;
-	}
-		
-	try {
-		App app(SIZE_SCREEN_X, SIZE_SCREEN_Y, "Engine");
-		app.run();
-	} catch (const std::exception& e) {
-		std::cerr << "Fatal: " << e.what() << std::endl;
-		return 1;
+	if (av[1]) {
+		manager.loadFromRTFile(av[1]);
+		LOG_DEBUG(manager.getFirstScene())
 	}
 
 	return 0;

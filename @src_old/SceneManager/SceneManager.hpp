@@ -1,0 +1,32 @@
+#pragma once
+#include "Log.hpp"
+#include <memory>
+#include <vector>
+
+/////////////////////////////////////////////////////////////////////////////////////////]
+// 									LIBs
+
+#include "Scene.hpp"
+
+/////////////////////////////////////////////////////////////////////////////////////////]
+// 									CLASS
+/////////////////////////////////////////////////////////////////////////////////////////]
+
+class SceneManager {
+
+//
+public:
+	SceneManager();
+	~SceneManager();
+
+	SceneManager(const SceneManager &) = delete;
+	SceneManager& operator=(const SceneManager&) = delete;
+
+	void addScene(Scene scene);
+
+//
+private:
+	std::vector<std::unique_ptr<Scene>> _scenes;
+
+};
+

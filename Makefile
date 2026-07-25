@@ -33,7 +33,7 @@ map: $(NAME)
 
 # RUN MAPS
 a: $(NAME)
-# 	@$(call random_shmol_cat, teshting ... $@: miiniRT !!, 'hav fun ね? ($(word 1, $^))', , );
+	@$(call random_shmol_cat, teshting ... $@: miiniRT !!, 'hav fun ね? ($(word 1, $^))', $(CLS), );
 	@rm -f log/*
 	./$(NAME) $(MAP)
 
@@ -189,8 +189,8 @@ test2: $(OBJ) $(TEST_MAIN) $(HEAD)
 # --------------------------------------------------------------------------------- >
 # CREATE THE CLASS
 TEMPLATE_PATH = "TEST/_template"
-OUTPUT_CLASS = TEST/class
-NEW_CLASS = Array
+OUTPUT_CLASS = src
+NEW_CLASS = Parser
 
 new: 
 	@$(call random_shmol_cat, "Classes created for: ~", "$(NEW_CLASS)", $(CLS), );

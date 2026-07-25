@@ -6,6 +6,7 @@
                 "${workspaceFolder}/inc",
                 "${workspaceFolder}/src",
                 "${workspaceFolder}/src/**",
+                "${workspaceFolder}/src/**",
                 "${workspaceFolder}/glad/include"
             ],
             "defines": [],
